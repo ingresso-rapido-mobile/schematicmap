@@ -2,6 +2,7 @@ package com.vitorprado.schematicmap
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.MapView
@@ -10,12 +11,16 @@ class SectorMapView : MapView {
 
     private var sectorsLayer: SectorLayer? = null
     var downEvent: Pair<Float, Float> = Pair(0f, 0f)
+    var sectorColor: Int? = null
+    var sectorAlpha: Int? = null
+    var sectorPaintMode: PorterDuff.Mode? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun loadMap(sectors: List<Sector>, sectorSelectedListener: (Sector) -> Any?) {
+        this.isScaleAndRotateTogether = true
         sectorsLayer = SectorLayer(this, sectors, sectorSelectedListener)
         sectorsLayer!!.setLevel(Int.MAX_VALUE)
         sectorsLayer?.sectors?.first()?.visible = true
@@ -37,6 +42,7 @@ class SectorMapView : MapView {
 
     fun selectSector(sector: Sector) {
         selectSector(sector.id)
+        refresh()
     }
 
     fun selectSector(sectorId: Int) {
