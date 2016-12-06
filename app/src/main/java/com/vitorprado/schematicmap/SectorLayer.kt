@@ -19,7 +19,7 @@ class SectorLayer(val sectorMapView: SectorMapView, val sectors: List<Sector>, v
         canvas?.save()
         canvas?.matrix = matrix
         for (it in sectors) {
-            if (it.visible) canvas?.drawPath(it.path, paint)
+            it.draw(canvas, paint)
         }
         canvas?.restore()
     }
@@ -39,14 +39,16 @@ class SectorLayer(val sectorMapView: SectorMapView, val sectors: List<Sector>, v
         clickRegion.setPath(createClickPath(clickPoints), clip)
 
         for (it in sectors) {
-            val region = Region()
-            region.setPath(it.path, clip)
-            val found = clickPoints?.let { region.contains(it[0].toInt(), it[1].toInt()) }
-            if (found?:false) {
-                selectSector(it.id)
-                mapView.refresh()
-                sectorSelectedListener.invoke(it)
-                return
+            for (path in it.paths) {
+                val region = Region()
+                region.setPath(path, clip)
+                val found = clickPoints?.let { region.contains(it[0].toInt(), it[1].toInt()) }
+                if (found ?: false) {
+                    selectSector(it.id)
+                    mapView.refresh()
+                    sectorSelectedListener.invoke(it)
+                    return
+                }
             }
         }
     }
