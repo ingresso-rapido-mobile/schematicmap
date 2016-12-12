@@ -1,16 +1,13 @@
-package com.vitorprado.schematicmap
+package com.vitorprado.schematicmap.sector
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.util.AttributeSet
-import android.view.MotionEvent
-import com.onlylemi.mapview.library.MapView
+import com.vitorprado.schematicmap.ImprovedMapView
 
-class SectorMapView : MapView {
+class SectorMapView : ImprovedMapView {
 
     private var sectorsLayer: SectorLayer? = null
-    var downEvent: Pair<Float, Float> = Pair(0f, 0f)
     var sectorColor: Int? = null
     var sectorAlpha: Int? = null
     var sectorPaintMode: PorterDuff.Mode? = null
@@ -27,17 +24,6 @@ class SectorMapView : MapView {
         sectorSelectedListener.invoke(sectorsLayer!!.sectors.first())
         addLayer(sectorsLayer)
         refresh()
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> downEvent = Pair(event?.x?:0f, event?.y?:0f)
-        }
-        return super.onTouchEvent(event)
-    }
-
-    override fun draw(canvas: Canvas?) {
-        super.draw(canvas)
     }
 
     fun selectSector(sector: Sector) {

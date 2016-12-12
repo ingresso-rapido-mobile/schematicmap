@@ -1,4 +1,4 @@
-package com.vitorprado.schematicmap
+package com.vitorprado.schematicmap.sector
 
 import android.graphics.*
 import android.view.MotionEvent
@@ -11,7 +11,7 @@ class SectorLayer(val sectorMapView: SectorMapView, val sectors: List<Sector>, v
     override fun draw(canvas: Canvas?, matrix: Matrix?, v: Float, v1: Float) {
         clip = canvas?.let { Region(0, 0, canvas.width, canvas.height) }
         val paint = Paint()
-        paint.color = sectorMapView.sectorColor?:Color.CYAN
+        paint.color = sectorMapView.sectorColor?: Color.CYAN
         paint.alpha = sectorMapView.sectorAlpha?:(255 * 0.7).toInt()
         paint.style = Paint.Style.FILL
         if (sectorMapView.sectorPaintMode != null) paint.xfermode = PorterDuffXfermode(sectorMapView.sectorPaintMode)

@@ -1,8 +1,9 @@
-package com.vitorprado.schematicmap
+package com.vitorprado.schematicmap.sector
 
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import com.vitorprado.schematicmap.Point
 import java.util.*
 
 class Sector {
@@ -42,6 +43,3 @@ class Sector {
         }
     }
 }
-
-
-class Point(val x: Float, val y: Float)
