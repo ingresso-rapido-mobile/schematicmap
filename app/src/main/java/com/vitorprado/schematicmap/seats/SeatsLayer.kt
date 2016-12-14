@@ -38,15 +38,15 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun checkIFClickedInSector(clickPoints: FloatArray?) {
-        val clickRegion = Region()
-        clickRegion.setPath(createClickPath(clickPoints), clip)
+        val clickBounds = RectF()
+        createClickPath(clickPoints).computeBounds(clickBounds, false)
 
         for (it in seats) {
             if (it.state == SeatState.UNAVAILABLE) continue
-            val region = Region()
-            region.setPath(it.path, clip)
-            val found = clickPoints?.let { region.contains(it[0].toInt(), it[1].toInt()) }
-            if (found ?: false) {
+
+            val seatBounds = RectF()
+            it.path.computeBounds(seatBounds, false)
+            if (seatBounds.intersect(clickBounds)) {
                 selectSeat(it)
                 return
             }
@@ -66,12 +66,12 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
 
     private fun createClickPath(clickPoints: FloatArray?): Path {
         val path = Path()
-        path.moveTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(15))  as Float, clickPoints?.get(1)?.minus(15) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(15))  as Float, clickPoints?.get(1)?.plus(15)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.plus(15)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
+        path.moveTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
+        path.lineTo((clickPoints?.get(0)?.plus(10))  as Float, clickPoints?.get(1)?.minus(10) as Float)
+        path.lineTo((clickPoints?.get(0)?.plus(10))  as Float, clickPoints?.get(1)?.plus(10)  as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.plus(10)  as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
         return path
     }
 }
