@@ -28,7 +28,7 @@ class Seat {
 
     private fun createPath(): Path {
         val p = Path()
-        p.addCircle(position.x + radius, position.y, radius, Path.Direction.CCW)
+        p.addCircle(position.x, position.y, radius, Path.Direction.CCW)
         return p
     }
 }
