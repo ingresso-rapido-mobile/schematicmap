@@ -3,6 +3,7 @@ package com.vitorprado.schematicmap.seats
 import android.content.Context
 import android.util.AttributeSet
 import com.vitorprado.schematicmap.ImprovedMapView
+import java.util.*
 
 class SeatsMapView : ImprovedMapView {
 
@@ -18,5 +19,21 @@ class SeatsMapView : ImprovedMapView {
         seatsLayer!!.setLevel(Int.MAX_VALUE)
         addLayer(seatsLayer)
         refresh()
+    }
+
+    fun selectSeat(receivedSeat: Seat) {
+        changeSeatStatus(receivedSeat, SeatState.SELECTED)
+    }
+
+    fun deselectSeat(receivedSeat: Seat) {
+        changeSeatStatus(receivedSeat, SeatState.AVAILABLE)
+    }
+
+    private fun changeSeatStatus(receivedSeat: Seat, state: SeatState) {
+        for (seat in seatsLayer?.seats?:ArrayList<Seat>()) {
+            if (seat.id == receivedSeat.id) {
+                seat.state = state
+            }
+        }
     }
 }

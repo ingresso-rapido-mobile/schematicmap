@@ -9,11 +9,11 @@ class Seat {
 
     val path by lazy { createPath() }
     val name: String
-    val id: Int
+    val id: Long
     val position: Point
     var state: SeatState
 
-    constructor(name: String, id: Int, position: Point, state: SeatState) {
+    constructor(name: String, id: Long, position: Point, state: SeatState) {
         this.name = name
         this.id = id
         this.position = position
