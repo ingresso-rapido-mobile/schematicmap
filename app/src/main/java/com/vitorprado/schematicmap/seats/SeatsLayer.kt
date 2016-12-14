@@ -65,7 +65,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun isCloseEnough(position: Point, clickPoints: FloatArray): Boolean {
-        return distance(position.x, position.y, clickPoints[0], clickPoints[1]) <= 15f
+        return distance(position.x, position.y, clickPoints[0], clickPoints[1]) <= 25f
     }
 
     private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
