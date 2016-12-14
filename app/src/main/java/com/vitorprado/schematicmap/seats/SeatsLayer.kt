@@ -4,6 +4,7 @@ import android.graphics.*
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.layer.MapLayer
 import com.vitorprado.schematicmap.ImprovedMapView
+import com.vitorprado.schematicmap.Point
 
 class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val seatClickedListener: (Seat) -> Any?) : MapLayer(seatsMapView) {
 
@@ -30,27 +31,30 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     override fun onTouch(event: MotionEvent?) {
         if (hasMoved(Pair(event?.x?:0f, event?.y?:0f))) return
         val clickPoints = event?.let { mapView.convertMapXYToScreenXY(event.x, event.y) }
-        checkIFClickedInSector(clickPoints)
+        if (clickPoints != null) checkIFClickedInSector(clickPoints)
     }
 
     private fun hasMoved(points: Pair<Float, Float>): Boolean {
         return !((points.first in (seatsMapView.downEvent.first - 10f)..(seatsMapView.downEvent.first + 10f)) && (points.second in (seatsMapView.downEvent.second - 10f)..(seatsMapView.downEvent.second + 10f)))
     }
 
-    private fun checkIFClickedInSector(clickPoints: FloatArray?) {
-        val clickBounds = RectF()
-        createClickPath(clickPoints).computeBounds(clickBounds, false)
-
+    private fun checkIFClickedInSector(clickPoints: FloatArray) {
         for (it in seats) {
             if (it.state == SeatState.UNAVAILABLE) continue
 
-            val seatBounds = RectF()
-            it.path.computeBounds(seatBounds, false)
-            if (seatBounds.intersect(clickBounds)) {
+            if (isCloseEnough(it.position, clickPoints)) {
                 selectSeat(it)
                 return
             }
         }
+    }
+
+    private fun isCloseEnough(position: Point, clickPoints: FloatArray): Boolean {
+        return distance(position.x, position.y, clickPoints[0], clickPoints[1]) <= 10f
+    }
+
+    private fun  distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        return Math.sqrt((((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))).toDouble()).toFloat()
     }
 
     private fun selectSeat(seat: Seat) {
