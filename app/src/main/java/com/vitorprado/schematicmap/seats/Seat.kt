@@ -11,12 +11,14 @@ class Seat {
     val name: String
     val id: Long
     val position: Point
+    val radius: Float
     var state: SeatState
 
-    constructor(name: String, id: Long, position: Point, state: SeatState) {
+    constructor(name: String, id: Long, position: Point, radius: Float, state: SeatState) {
         this.name = name
         this.id = id
         this.position = position
+        this.radius = radius
         this.state = state
     }
 
@@ -26,7 +28,7 @@ class Seat {
 
     private fun createPath(): Path {
         val p = Path()
-        p.addCircle(position.x, position.y, 10f, Path.Direction.CCW)
+        p.addCircle(position.x + radius, position.y, radius, Path.Direction.CCW)
         return p
     }
 }
