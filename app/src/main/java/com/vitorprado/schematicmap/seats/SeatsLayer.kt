@@ -66,12 +66,12 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
 
     private fun createClickPath(clickPoints: FloatArray?): Path {
         val path = Path()
-        path.moveTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(10))  as Float, clickPoints?.get(1)?.minus(10) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(10))  as Float, clickPoints?.get(1)?.plus(10)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.plus(10)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(10)) as Float, clickPoints?.get(1)?.minus(10) as Float)
+        path.moveTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
+        path.lineTo((clickPoints?.get(0)?.plus(15))  as Float, clickPoints?.get(1)?.minus(15) as Float)
+        path.lineTo((clickPoints?.get(0)?.plus(15))  as Float, clickPoints?.get(1)?.plus(15)  as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.plus(15)  as Float)
+        path.lineTo((clickPoints?.get(0)?.minus(15)) as Float, clickPoints?.get(1)?.minus(15) as Float)
         return path
     }
 }
