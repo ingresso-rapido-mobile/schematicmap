@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import com.onlylemi.mapview.library.layer.MapLayer
 import com.vitorprado.schematicmap.ImprovedMapView
 import com.vitorprado.schematicmap.Point
+import java.util.*
 
 class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val seatClickedListener: (Seat) -> Any?) : MapLayer(seatsMapView) {
 
@@ -39,33 +40,56 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun checkIFClickedInSector(clickPoints: FloatArray) {
-        for (it in seats) {
+        for (it in closeEnoughSeats(seats, clickPoints)) {
             if (it.state == SeatState.UNAVAILABLE) continue
+            selectSeat(it)
+            return
+        }
+    }
 
-            if (isCloseEnough(it.position, clickPoints)) {
-                selectSeat(it)
-                return
+    private fun closeEnoughSeats(seats: List<Seat>, clickPoints: FloatArray): List<Seat> {
+        val filteredList = ArrayList<Seat>()
+        for (seat in seats) {
+            if (isCloseEnough(seat.position, clickPoints)) {
+                filteredList.add(seat)
             }
         }
+        Collections.sort(filteredList, { l, r ->
+            val dist1 = distance(l.position.x, l.position.y, clickPoints[0], clickPoints[1])
+            val dist2 = distance(r.position.x, r.position.y, clickPoints[0], clickPoints[1])
+            if (dist1 > dist2) 1
+            else if (dist1 < dist2) -1
+            else 0
+        })
+        return filteredList
     }
 
     private fun isCloseEnough(position: Point, clickPoints: FloatArray): Boolean {
         return distance(position.x, position.y, clickPoints[0], clickPoints[1]) <= 15f
     }
 
-    private fun  distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+    private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         return Math.sqrt((((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))).toDouble()).toFloat()
     }
 
     private fun selectSeat(seat: Seat) {
         if (seat.state == SeatState.UNAVAILABLE) return
-        seat.state = when (seat.state) {
+        val realSeat = findSeat(seat)
+        realSeat?.state = when (realSeat?.state) {
             SeatState.AVAILABLE -> SeatState.SELECTED
             SeatState.SELECTED -> SeatState.AVAILABLE
             SeatState.UNAVAILABLE -> SeatState.UNAVAILABLE
+            null -> SeatState.UNAVAILABLE
         }
         mapView.refresh()
-        seatClickedListener.invoke(seat)
+        seatClickedListener.invoke(realSeat?:seat)
+    }
+
+    private fun findSeat(mySeat: Seat): Seat? {
+        for (seat in seats) {
+            if (mySeat.id == seat.id) return seat
+        }
+        return null;
     }
 
     private fun createClickPath(clickPoints: FloatArray?): Path {
