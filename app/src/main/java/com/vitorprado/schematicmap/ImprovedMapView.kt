@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.MapView
-import com.onlylemi.mapview.library.utils.MapMath
 
 open class ImprovedMapView : MapView {
 
@@ -47,7 +46,7 @@ open class ImprovedMapView : MapView {
                     val newDist: Float
                     val newDegree: Float
                     var scale: Float
-                    var rotate: Float
+                    val rotate: Float
                     when (this.currentTouchState) {
                         1 -> {
                             this.currentMatrix.set(this.saveMatrix)
@@ -77,36 +76,9 @@ open class ImprovedMapView : MapView {
 //                            this.currentMatrix.postRotate(rotate, this.mid.x, this.mid.y)
                             this.refresh()
                         }
-                        4 -> if (!this.isScaleAndRotateTogether) {
-                            scale = this.oldDist
-                            rotate = MapMath.getDistanceBetweenTwoPoints(event.getX(0), event.getY(0), this.startTouch.x, this.startTouch.y)
-                            val z = this.distance(event, this.mid)
-                            val cos = (scale * scale + rotate * rotate - z * z) / (2.0f * scale * rotate)
-                            val degree = Math.toDegrees(Math.acos(cos.toDouble())).toFloat()
-                            if (degree < 120.0f && degree > 45.0f) {
-                                this.oldDegree = this.rotation(event, this.mid)
-                                this.currentTouchState = 3
-                            } else {
-                                this.oldDist = this.distance(event, this.mid)
-                                this.currentTouchState = 2
-                            }
-                        } else {
-                            this.currentMatrix.set(this.saveMatrix)
-                            newDist = this.distance(event, this.mid)
-                            newDegree = this.rotation(event, this.mid)
-                            scale = this.oldDegree
-                            rotate = newDist / this.oldDist
-                            if (rotate * this.saveZoom < this.minZoom) {
-                                rotate = this.minZoom / this.saveZoom
-                            } else if (rotate * this.saveZoom > this.maxZoom) {
-                                rotate = this.maxZoom / this.saveZoom
-                            }
-
-                            this.currentZoom = this.saveZoom
-                            this.currentRotateDegrees = (newDegree - this.oldDegree + this.currentRotateDegrees) % 360.0f
-                            this.currentMatrix.postScale(rotate, rotate, this.mid.x, this.mid.y)
-//                            this.currentMatrix.postRotate(scale, this.mid.x, this.mid.y)
-                            this.refresh()
+                        4 -> {
+                            this.oldDist = this.distance(event, this.mid)
+                            this.currentTouchState = 2
                         }
                     }
                 }
