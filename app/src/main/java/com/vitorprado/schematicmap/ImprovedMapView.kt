@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.MapView
+import com.onlylemi.mapview.library.utils.MapMath
 
 open class ImprovedMapView : MapView {
 
@@ -18,10 +19,113 @@ open class ImprovedMapView : MapView {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> downEvent = Pair(event?.x?:0f, event?.y?:0f)
         }
-        val result = super.onTouchEvent(event)
-        setCurrentRotateDegrees(0f, 0f, 0f)
-        refresh()
-        return result
+        return superClassTouchModified(event!!)
+    }
+
+    private fun superClassTouchModified(event: MotionEvent): Boolean {
+        if (!this.isMapLoadFinish) {
+            return false
+        } else {
+            when (event.action and 255) {
+                0 -> {
+                    this.saveMatrix.set(this.currentMatrix)
+                    this.startTouch.set(event.x, event.y)
+                    this.currentTouchState = 1
+                }
+                1 -> {
+                    if (this.withFloorPlan(event.getX(), event.getY())) {
+                        val scale1 = this.layers.iterator()
+
+                        while (scale1.hasNext()) {
+                            scale1.next().onTouch(event)
+                        }
+                    }
+
+                    this.currentTouchState = 0
+                }
+                2 -> {
+                    val newDist: Float
+                    val newDegree: Float
+                    var scale: Float
+                    var rotate: Float
+                    when (this.currentTouchState) {
+                        1 -> {
+                            this.currentMatrix.set(this.saveMatrix)
+                            this.currentMatrix.postTranslate(event.x - this.startTouch.x, event.y - this.startTouch.y)
+                            this.refresh()
+                        }
+                        2 -> {
+                            this.currentMatrix.set(this.saveMatrix)
+                            newDist = this.distance(event, this.mid)
+                            scale = newDist / this.oldDist
+                            if (scale * this.saveZoom < this.minZoom) {
+                                scale = this.minZoom / this.saveZoom
+                            } else if (scale * this.saveZoom > this.maxZoom) {
+                                scale = this.maxZoom / this.saveZoom
+                            }
+
+                            this.currentZoom = scale * this.saveZoom
+                            this.currentMatrix.postScale(scale, scale, this.mid.x, this.mid.y)
+                            this.refresh()
+                        }
+                        3 -> {
+                            this.currentMatrix.set(this.saveMatrix)
+                            newDegree = this.rotation(event, this.mid)
+                            rotate = newDegree - this.oldDegree
+                            this.currentRotateDegrees = (rotate + this.saveRotateDegrees) % 360.0f
+                            this.currentRotateDegrees = if (this.currentRotateDegrees > 0.0f) this.currentRotateDegrees else this.currentRotateDegrees + 360.0f
+//                            this.currentMatrix.postRotate(rotate, this.mid.x, this.mid.y)
+                            this.refresh()
+                        }
+                        4 -> if (!this.isScaleAndRotateTogether) {
+                            scale = this.oldDist
+                            rotate = MapMath.getDistanceBetweenTwoPoints(event.getX(0), event.getY(0), this.startTouch.x, this.startTouch.y)
+                            val z = this.distance(event, this.mid)
+                            val cos = (scale * scale + rotate * rotate - z * z) / (2.0f * scale * rotate)
+                            val degree = Math.toDegrees(Math.acos(cos.toDouble())).toFloat()
+                            if (degree < 120.0f && degree > 45.0f) {
+                                this.oldDegree = this.rotation(event, this.mid)
+                                this.currentTouchState = 3
+                            } else {
+                                this.oldDist = this.distance(event, this.mid)
+                                this.currentTouchState = 2
+                            }
+                        } else {
+                            this.currentMatrix.set(this.saveMatrix)
+                            newDist = this.distance(event, this.mid)
+                            newDegree = this.rotation(event, this.mid)
+                            scale = this.oldDegree
+                            rotate = newDist / this.oldDist
+                            if (rotate * this.saveZoom < this.minZoom) {
+                                rotate = this.minZoom / this.saveZoom
+                            } else if (rotate * this.saveZoom > this.maxZoom) {
+                                rotate = this.maxZoom / this.saveZoom
+                            }
+
+                            this.currentZoom = this.saveZoom
+                            this.currentRotateDegrees = (newDegree - this.oldDegree + this.currentRotateDegrees) % 360.0f
+                            this.currentMatrix.postScale(rotate, rotate, this.mid.x, this.mid.y)
+//                            this.currentMatrix.postRotate(scale, this.mid.x, this.mid.y)
+                            this.refresh()
+                        }
+                    }
+                }
+                5 -> if (event.pointerCount == 2) {
+                    this.saveMatrix.set(this.currentMatrix)
+                    this.saveZoom = this.currentZoom
+                    this.saveRotateDegrees = this.currentRotateDegrees
+                    this.startTouch.set(event.getX(0), event.getY(0))
+                    this.currentTouchState = 4
+                    this.mid = this.midPoint(event)
+                    this.oldDist = this.distance(event, this.mid)
+                    this.oldDegree = this.rotation(event, this.mid)
+                }
+                6 -> this.currentTouchState = 0
+                else -> { }
+            }
+
+            return true
+        }
     }
 
     override fun draw(canvas: Canvas?) {
