@@ -18,12 +18,11 @@ open class ImprovedMapView : MapView {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> downEvent = Pair(event?.x?:0f, event?.y?:0f)
         }
-        val result = super.onTouchEvent(event)
-        setCurrentRotateDegrees(0f, x, y)
-        return result
+        return super.onTouchEvent(event)
     }
 
     override fun draw(canvas: Canvas?) {
+        setCurrentRotateDegrees(0f, mapHeight / 2, mapWidth / 2)
         super.draw(canvas)
     }
 }
