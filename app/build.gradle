@@ -24,7 +24,7 @@ android {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.onlylemi:mapview:v1.0'
+    compile 'com.github.MrAlaboheme:mapview:v1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
 }
 repositories {
