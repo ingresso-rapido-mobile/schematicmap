@@ -92,14 +92,13 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
         return null;
     }
 
-    private fun createClickPath(clickPoints: FloatArray?): Path {
-        val path = Path()
-        path.moveTo((clickPoints?.get(0)?.minus(5)) as Float, clickPoints?.get(1)?.minus(5) as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(5)) as Float, clickPoints?.get(1)?.minus(5) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(5))  as Float, clickPoints?.get(1)?.minus(5) as Float)
-        path.lineTo((clickPoints?.get(0)?.plus(5))  as Float, clickPoints?.get(1)?.plus(5)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(5)) as Float, clickPoints?.get(1)?.plus(5)  as Float)
-        path.lineTo((clickPoints?.get(0)?.minus(5)) as Float, clickPoints?.get(1)?.minus(5) as Float)
-        return path
+    fun resetAllSeats() {
+        for (seat in seats) {
+            seat.state = when (seat.state) {
+                SeatState.AVAILABLE -> SeatState.AVAILABLE
+                SeatState.SELECTED -> SeatState.AVAILABLE
+                SeatState.UNAVAILABLE -> SeatState.UNAVAILABLE
+            }
+        }
     }
 }

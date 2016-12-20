@@ -73,7 +73,6 @@ open class ImprovedMapView : MapView {
                             rotate = newDegree - this.oldDegree
                             this.currentRotateDegrees = (rotate + this.saveRotateDegrees) % 360.0f
                             this.currentRotateDegrees = if (this.currentRotateDegrees > 0.0f) this.currentRotateDegrees else this.currentRotateDegrees + 360.0f
-//                            this.currentMatrix.postRotate(rotate, this.mid.x, this.mid.y)
                             this.refresh()
                         }
                         4 -> {

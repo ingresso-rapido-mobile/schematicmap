@@ -29,6 +29,10 @@ class SeatsMapView : ImprovedMapView {
         changeSeatStatus(receivedSeat, SeatState.AVAILABLE)
     }
 
+    fun resetAllSeats() {
+        seatsLayer?.resetAllSeats()
+    }
+
     private fun changeSeatStatus(receivedSeat: Seat, state: SeatState) {
         for (seat in seatsLayer?.seats?:ArrayList<Seat>()) {
             if (seat.id == receivedSeat.id) {
