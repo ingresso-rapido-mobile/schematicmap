@@ -26,8 +26,11 @@ class Seat {
     }
 
     fun draw(canvas: Canvas?, paint: Paint, wheelchairIcon: Bitmap) {
-        canvas?.drawPath(path, paint)
-        if (type == SeatType.PWD) canvas?.drawBitmap(wheelchairIcon, position.x - radius, position.y - radius, paint)
+        if (type == SeatType.PWD) {
+            canvas?.drawBitmap(wheelchairIcon, position.x - 8f, position.y - 8f, paint)
+        } else {
+            canvas?.drawPath(path, paint)
+        }
     }
 
     private fun createPath(): Path {

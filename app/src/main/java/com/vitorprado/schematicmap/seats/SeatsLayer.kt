@@ -11,7 +11,7 @@ import java.util.*
 class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val seatClickedListener: (Seat) -> Any?) : MapLayer(seatsMapView) {
 
     private var clip: Region? = null
-    private var wheelchairIcon = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(seatsMapView.context.resources, R.drawable.pwdicon), 12, 12, false)
+    private var wheelchairIcon = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(seatsMapView.context.resources, R.drawable.pwdicon), 16, 16, false)
 
     override fun draw(canvas: Canvas?, currentMatrix: Matrix?, currentZoom: Float, currentRotateDegrees: Float) {
         clip = canvas?.let { Region(0, 0, canvas.width, canvas.height) }
