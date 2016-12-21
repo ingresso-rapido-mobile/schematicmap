@@ -1,15 +1,18 @@
 package com.vitorprado.schematicmap.seats
 
+import android.content.res.Resources
 import android.graphics.*
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.layer.MapLayer
 import com.vitorprado.schematicmap.ImprovedMapView
 import com.vitorprado.schematicmap.Point
+import com.vitorprado.schematicmap.R
 import java.util.*
 
 class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val seatClickedListener: (Seat) -> Any?) : MapLayer(seatsMapView) {
 
     private var clip: Region? = null
+    private var wheelchairIcon = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.pwdicon), 12, 12, false)
 
     override fun draw(canvas: Canvas?, currentMatrix: Matrix?, currentZoom: Float, currentRotateDegrees: Float) {
         clip = canvas?.let { Region(0, 0, canvas.width, canvas.height) }
@@ -20,11 +23,14 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
         canvas?.matrix = currentMatrix
         for (it in seats) {
             paint.color = when (it.state) {
-                SeatState.AVAILABLE -> Color.GREEN
-                SeatState.SELECTED -> Color.BLUE
+                SeatState.AVAILABLE -> when (it.type) {
+                    SeatType.NORMAL -> Color.GREEN
+                    SeatType.PWD -> Color.BLUE
+                }
+                SeatState.SELECTED -> Color.YELLOW
                 SeatState.UNAVAILABLE -> Color.GRAY
             }
-            it.draw(canvas, paint)
+            it.draw(canvas, paint, wheelchairIcon)
         }
         canvas?.restore()
     }
