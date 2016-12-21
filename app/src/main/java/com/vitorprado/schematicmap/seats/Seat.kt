@@ -1,9 +1,9 @@
 package com.vitorprado.schematicmap.seats
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.drawable.Drawable
 import com.vitorprado.schematicmap.Point
 
 class Seat {
@@ -25,9 +25,10 @@ class Seat {
         this.type = type
     }
 
-    fun draw(canvas: Canvas?, paint: Paint, wheelchairIcon: Bitmap) {
+    fun draw(canvas: Canvas?, paint: Paint, wheelchairIcon: Drawable) {
         if (type == SeatType.PWD) {
-            canvas?.drawBitmap(wheelchairIcon, position.x - 8f, position.y - 8f, paint)
+            wheelchairIcon.setBounds((position.x - 8f).toInt(), (position.y - 8f).toInt(), (position.x + 8f).toInt(), (position.y + 8f).toInt())
+            wheelchairIcon.draw(canvas)
         } else {
             canvas?.drawPath(path, paint)
         }
