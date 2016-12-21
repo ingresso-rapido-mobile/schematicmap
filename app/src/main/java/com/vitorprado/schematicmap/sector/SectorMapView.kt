@@ -20,8 +20,6 @@ class SectorMapView : ImprovedMapView {
         this.isScaleAndRotateTogether = true
         sectorsLayer = SectorLayer(this, sectors, sectorSelectedListener)
         sectorsLayer!!.setLevel(Int.MAX_VALUE)
-        sectorsLayer?.sectors?.first()?.visible = true
-        sectorSelectedListener.invoke(sectorsLayer!!.sectors.first())
         addLayer(sectorsLayer)
         refresh()
     }
