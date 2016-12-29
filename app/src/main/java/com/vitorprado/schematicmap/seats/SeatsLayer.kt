@@ -93,7 +93,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
 
     private fun findSeat(mySeat: Seat): Seat? {
         for (seat in seats) {
-            if (mySeat.id == seat.id) return seat
+            if (mySeat.name == seat.name) return seat
         }
         return null;
     }
