@@ -12,13 +12,13 @@ class Seat {
 
     val path by lazy { createPath() }
     val name: String
-    val id: String
+    val id: Long
     val position: Point
     val radius: Float
     var state: SeatState
     var type: SeatType
 
-    constructor(name: String, id: String, position: Point, radius: Float, state: SeatState, type: SeatType) {
+    constructor(name: String, id: Long, position: Point, radius: Float, state: SeatState, type: SeatType) {
         this.name = name
         this.id = id
         this.position = position
