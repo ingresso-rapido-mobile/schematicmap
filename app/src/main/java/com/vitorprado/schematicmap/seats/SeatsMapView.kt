@@ -25,7 +25,7 @@ class SeatsMapView : ImprovedMapView {
         changeSeatStatus(receivedSeat, SeatState.SELECTED)
     }
 
-    fun selectSeat(receivedSeat: Long) {
+    fun selectSeat(receivedSeat: String) {
         changeSeatStatus(receivedSeat, SeatState.SELECTED)
     }
 
@@ -45,7 +45,7 @@ class SeatsMapView : ImprovedMapView {
         }
     }
 
-    private fun changeSeatStatus(receivedSeat: Long, state: SeatState) {
+    private fun changeSeatStatus(receivedSeat: String, state: SeatState) {
         for (seat in seatsLayer?.seats?:ArrayList<Seat>()) {
             if (seat.id == receivedSeat) {
                 seat.state = state
