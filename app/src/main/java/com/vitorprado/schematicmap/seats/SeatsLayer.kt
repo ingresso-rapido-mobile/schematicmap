@@ -24,7 +24,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
         for (it in seats) {
             paint.color = when (it.state) {
                 SeatState.AVAILABLE -> when (it.type) {
-                    SeatType.NORMAL -> Color.GREEN
+                    SeatType.NORMAL, SeatType.CPWD -> Color.GREEN
                     SeatType.PWD -> Color.BLUE
                 }
                 SeatState.SELECTED -> Color.YELLOW

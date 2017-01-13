@@ -48,4 +48,4 @@ class Seat {
 
 enum class SeatState { AVAILABLE, SELECTED, UNAVAILABLE }
 
-enum class SeatType { NORMAL, PWD }
+enum class SeatType { NORMAL, PWD, CPWD }
