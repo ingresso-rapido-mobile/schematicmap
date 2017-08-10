@@ -31,6 +31,10 @@ class SeatsMapView : ImprovedMapView {
         changeSeatStatus(receivedSeat, SeatState.SELECTED)
     }
 
+    fun highlightSeat(receivedSeat: String) {
+        changeSeatStatus(receivedSeat, SeatState.HIGHLIGHTED)
+    }
+
     fun deselectSeat(receivedSeat: Seat) {
         changeSeatStatus(receivedSeat, SeatState.AVAILABLE)
     }
