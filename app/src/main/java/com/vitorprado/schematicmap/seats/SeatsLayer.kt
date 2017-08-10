@@ -29,6 +29,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
                 }
                 SeatState.SELECTED -> Color.YELLOW
                 SeatState.UNAVAILABLE -> Color.GRAY
+                SeatState.HIGHLIGHTED -> Color.argb(255, 254, 160, 9)
             }
             it.draw(canvas, paint, wheelchairIcon)
         }
@@ -79,13 +80,12 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun selectSeat(seat: Seat) {
-        if (seat.state == SeatState.UNAVAILABLE) return
+        if (seat.state == SeatState.UNAVAILABLE || seat.state == SeatState.HIGHLIGHTED) return
         val realSeat = findSeat(seat)
         realSeat?.state = when (realSeat?.state) {
             SeatState.AVAILABLE -> SeatState.SELECTED
             SeatState.SELECTED -> SeatState.AVAILABLE
-            SeatState.UNAVAILABLE -> SeatState.UNAVAILABLE
-            null -> SeatState.UNAVAILABLE
+            else -> realSeat?.state?:SeatState.UNAVAILABLE
         }
         mapView.refresh()
         seatClickedListener.invoke(realSeat?:seat)
@@ -103,7 +103,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
             seat.state = when (seat.state) {
                 SeatState.AVAILABLE -> SeatState.AVAILABLE
                 SeatState.SELECTED -> SeatState.AVAILABLE
-                SeatState.UNAVAILABLE -> SeatState.UNAVAILABLE
+                else -> seat.state
             }
         }
     }

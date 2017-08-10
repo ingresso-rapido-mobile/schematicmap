@@ -46,6 +46,6 @@ class Seat {
     }
 }
 
-enum class SeatState { AVAILABLE, SELECTED, UNAVAILABLE }
+enum class SeatState { AVAILABLE, SELECTED, UNAVAILABLE, HIGHLIGHTED }
 
 enum class SeatType { NORMAL, PWD, CPWD }

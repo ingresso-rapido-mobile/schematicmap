@@ -18,7 +18,9 @@ class SeatsMapView : ImprovedMapView {
         seatsLayer = SeatsLayer(this, seats, seatSelectedListener)
         seatsLayer!!.setLevel(Int.MAX_VALUE)
         addLayer(seatsLayer)
-        refresh()
+        try {
+            this.post { refresh() }
+        } catch (ignored: Exception) {}
     }
 
     fun selectSeat(receivedSeat: Seat) {

@@ -21,7 +21,9 @@ class SectorMapView : ImprovedMapView {
         sectorsLayer = SectorLayer(this, sectors, sectorSelectedListener)
         sectorsLayer!!.setLevel(Int.MAX_VALUE)
         addLayer(sectorsLayer)
-        refresh()
+        try {
+            this.post { refresh() }
+        } catch (ignored: Exception) {}
     }
 
     fun selectSector(sector: Sector) {
