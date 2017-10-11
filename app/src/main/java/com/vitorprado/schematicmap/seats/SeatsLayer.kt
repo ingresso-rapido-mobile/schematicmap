@@ -95,13 +95,12 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
         for (seat in seats) {
             if (mySeat.name == seat.name) return seat
         }
-        return null;
+        return null
     }
 
     fun resetAllSeats() {
         for (seat in seats) {
             seat.state = when (seat.state) {
-                SeatState.AVAILABLE -> SeatState.AVAILABLE
                 SeatState.SELECTED -> SeatState.AVAILABLE
                 else -> seat.state
             }

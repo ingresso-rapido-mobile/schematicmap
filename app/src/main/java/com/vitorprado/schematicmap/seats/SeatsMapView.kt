@@ -43,6 +43,11 @@ class SeatsMapView : ImprovedMapView {
         seatsLayer?.resetAllSeats()
     }
 
+    fun resetAllSeats(selectedSeats: List<String>) {
+        seatsLayer?.resetAllSeats()
+        selectedSeats.forEach { selectSeat(it) }
+    }
+
     private fun changeSeatStatus(receivedSeat: Seat, state: SeatState) {
         for (seat in seatsLayer?.seats?:ArrayList<Seat>()) {
             if (seat.id == receivedSeat.id) {
