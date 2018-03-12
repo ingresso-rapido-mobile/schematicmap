@@ -83,7 +83,7 @@ open class ImprovedMapView : MapView {
                             scale = newDist / this.oldDist
                             if (minZoomModifier == 0f && maxZoomModifier == 0f) {
                                 minZoomModifier = this.saveZoom
-                                maxZoomModifier = this.saveZoom + .7f
+                                maxZoomModifier = this.saveZoom + 1.5f
                                 setMinZoom(minZoomModifier)
                                 setMaxZoom(maxZoomModifier)
                             }
@@ -147,7 +147,7 @@ open class ImprovedMapView : MapView {
             else -> -1
         }
 
-        if (currentZoom > minZoomModifier && minZoomModifier > 0f) {
+        if (minZoomModifier > 0f) {
             val mapWidthWithScale = mapWidth * currentZoom
             return when (direction) {
                 RIGHT -> currentX < 0
