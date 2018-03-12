@@ -43,7 +43,8 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun hasMoved(points: Pair<Float, Float>): Boolean {
-        return !((points.first in (seatsMapView.downEvent.first - 10f)..(seatsMapView.downEvent.first + 10f)) && (points.second in (seatsMapView.downEvent.second - 10f)..(seatsMapView.downEvent.second + 10f)))
+        return !((points.first in (seatsMapView.downEvent.first - 10f)..(seatsMapView.downEvent.first + 10f))
+                && (points.second in (seatsMapView.downEvent.second - 10f)..(seatsMapView.downEvent.second + 10f)))
     }
 
     private fun checkIFClickedInSector(clickPoints: FloatArray) {
@@ -55,18 +56,15 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun closeEnoughSeats(seats: List<Seat>, clickPoints: FloatArray): List<Seat> {
-        val filteredList = ArrayList<Seat>()
-        for (seat in seats) {
-            if (isCloseEnough(seat.position, clickPoints)) {
-                filteredList.add(seat)
-            }
-        }
+        val filteredList = seats.filter { isCloseEnough(it.position, clickPoints) }
         Collections.sort(filteredList, { l, r ->
             val dist1 = distance(l.position.x, l.position.y, clickPoints[0], clickPoints[1])
             val dist2 = distance(r.position.x, r.position.y, clickPoints[0], clickPoints[1])
-            if (dist1 > dist2) 1
-            else if (dist1 < dist2) -1
-            else 0
+            when {
+                dist1 > dist2 -> 1
+                dist1 < dist2 -> -1
+                else -> 0
+            }
         })
         return filteredList
     }
@@ -92,10 +90,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
     }
 
     private fun findSeat(mySeat: Seat): Seat? {
-        for (seat in seats) {
-            if (mySeat.name == seat.name) return seat
-        }
-        return null
+        return seats.firstOrNull { mySeat.name == it.name }
     }
 
     fun resetAllSeats() {
