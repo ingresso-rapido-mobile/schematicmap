@@ -13,6 +13,7 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
 
     private var clip: Region? = null
     private var wheelchairIcon = ContextCompat.getDrawable(seatsMapView.context, R.drawable.wheelchair)
+    private var wheelchairCompanionIcon = ContextCompat.getDrawable(seatsMapView.context, R.drawable.ic_icon_acompanhante)
 
     override fun draw(canvas: Canvas?, currentMatrix: Matrix?, currentZoom: Float, currentRotateDegrees: Float) {
         clip = canvas?.let { Region(0, 0, canvas.width, canvas.height) }
@@ -24,14 +25,15 @@ class SeatsLayer(val seatsMapView: ImprovedMapView, val seats: List<Seat>, val s
         for (it in seats) {
             paint.color = when (it.state) {
                 SeatState.AVAILABLE -> when (it.type) {
-                    SeatType.NORMAL, SeatType.CPWD -> Color.GREEN
+                    SeatType.NORMAL -> Color.GREEN
+                    SeatType.CPWD -> Color.BLACK
                     SeatType.PWD -> Color.BLUE
                 }
                 SeatState.SELECTED -> Color.YELLOW
                 SeatState.UNAVAILABLE -> Color.GRAY
                 SeatState.HIGHLIGHTED -> Color.argb(255, 254, 160, 9)
             }
-            it.draw(canvas, paint, wheelchairIcon)
+            it.draw(canvas, paint, wheelchairIcon, wheelchairCompanionIcon)
         }
         canvas?.restore()
     }

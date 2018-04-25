@@ -27,16 +27,18 @@ class Seat {
         this.type = type
     }
 
-    fun draw(canvas: Canvas?, paint: Paint, wheelchairIcon: Drawable) {
-        if (type == SeatType.PWD) {
-            val tintDrawable = DrawableCompat.wrap(wheelchairIcon.mutate())
-            DrawableCompat.setTint(tintDrawable, paint.color)
-            DrawableCompat.setTintMode(tintDrawable, PorterDuff.Mode.SRC_IN)
-            tintDrawable.setBounds((position.x - 8f).toInt(), (position.y - 8f).toInt(), (position.x + 8f).toInt(), (position.y + 8f).toInt())
-            tintDrawable.draw(canvas)
-        } else {
-            canvas?.drawPath(path, paint)
-        }
+    fun draw(canvas: Canvas?, paint: Paint, wheelchairIcon: Drawable, wheelchairCompanionIcon: Drawable) = when (type) {
+        SeatType.PWD -> drawCustomSeat(canvas, paint, wheelchairIcon)
+        SeatType.CPWD -> drawCustomSeat(canvas, paint, wheelchairCompanionIcon)
+        else -> canvas?.drawPath(path, paint)
+    }
+
+    private fun drawCustomSeat(canvas: Canvas?, paint: Paint, icon: Drawable) {
+        val tintDrawable = DrawableCompat.wrap(icon.mutate())
+        DrawableCompat.setTint(tintDrawable, paint.color)
+        DrawableCompat.setTintMode(tintDrawable, PorterDuff.Mode.SRC_IN)
+        tintDrawable.setBounds((position.x - 8f).toInt(), (position.y - 8f).toInt(), (position.x + 8f).toInt(), (position.y + 8f).toInt())
+        tintDrawable.draw(canvas)
     }
 
     private fun createPath(): Path {
