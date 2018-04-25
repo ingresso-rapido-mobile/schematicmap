@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import com.onlylemi.mapview.library.MapView
 
@@ -11,6 +12,11 @@ private const val TOP = 0
 private const val BOTTOM = 1
 private const val RIGHT = 2
 private const val LEFT = 3
+private const val TOUCH_STATE_NO = 0
+private const val TOUCH_STATE_SCROLL = 1
+private const val TOUCH_STATE_SCALE = 2
+private const val TOUCH_STATE_ROTATE = 3
+private const val TOUCH_STATE_TWO_POINTED = 4
 
 open class ImprovedMapView : MapView {
 
@@ -33,7 +39,7 @@ open class ImprovedMapView : MapView {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
-            MotionEvent.ACTION_DOWN -> downEvent = Pair(event?.x?:0f, event?.y?:0f)
+            MotionEvent.ACTION_DOWN -> downEvent = Pair(event?.x ?: 0f, event?.y ?: 0f)
         }
         return superClassTouchModified(event!!)
     }
@@ -43,43 +49,41 @@ open class ImprovedMapView : MapView {
             return false
         } else {
             when (event.action and 255) {
-                0 -> {
+                MotionEvent.ACTION_DOWN -> {
                     this.saveMatrix.set(this.currentMatrix)
                     this.startTouch.set(event.x, event.y)
-                    this.currentTouchState = 1
+                    this.currentTouchState = TOUCH_STATE_SCROLL
                 }
-                1 -> {
+                MotionEvent.ACTION_UP -> {
                     if (this.withFloorPlan(event.getX(), event.getY())) {
                         val scale1 = this.layers.iterator()
-
                         while (scale1.hasNext()) {
                             scale1.next().onTouch(event)
                         }
                     }
-
-                    this.currentTouchState = 0
+                    this.currentTouchState = TOUCH_STATE_NO
                 }
-                2 -> {
+                MotionEvent.ACTION_MOVE -> {
                     val newDist: Float
                     val newDegree: Float
                     var scale: Float
                     val rotate: Float
 
                     when (this.currentTouchState) {
-                        1 -> {
+                        TOUCH_STATE_SCROLL -> {
                             this.currentMatrix.set(this.saveMatrix)
                             if (canDragX(event)) lastXPosition = event.x - this.startTouch.x
                             if (canDragY(event)) lastYPosition = event.y - this.startTouch.y
                             this.currentMatrix.postTranslate(lastXPosition, lastYPosition)
                             this.refresh()
                         }
-                        2 -> {
+                        TOUCH_STATE_SCALE -> {
                             this.currentMatrix.set(this.saveMatrix)
                             newDist = this.distance(event, this.mid)
                             scale = newDist / this.oldDist
                             if (minZoomModifier == 0f && maxZoomModifier == 0f) {
                                 minZoomModifier = this.saveZoom
-                                maxZoomModifier = this.saveZoom + .7f
+                                maxZoomModifier = this.saveZoom + 1.5f
                                 setMinZoom(minZoomModifier)
                                 setMaxZoom(maxZoomModifier)
                             }
@@ -93,41 +97,41 @@ open class ImprovedMapView : MapView {
                             this.currentMatrix.postScale(scale, scale, this.mid.x, this.mid.y)
                             this.refresh()
                         }
-                        3 -> {
+                        TOUCH_STATE_ROTATE -> {
                             this.currentMatrix.set(this.saveMatrix)
                             newDegree = this.rotation(event, this.mid)
                             rotate = newDegree - this.oldDegree
                             this.currentRotateDegrees = (rotate + this.saveRotateDegrees) % 360.0f
-                            this.currentRotateDegrees = if (this.currentRotateDegrees > 0.0f) this.currentRotateDegrees else this.currentRotateDegrees + 360.0f
+                            this.currentRotateDegrees = if (this.currentRotateDegrees > 0.0f) this.currentRotateDegrees
+                            else this.currentRotateDegrees + 360.0f
                             this.refresh()
                         }
-                        4 -> {
+                        TOUCH_STATE_TWO_POINTED -> {
                             this.oldDist = this.distance(event, this.mid)
-                            this.currentTouchState = 2
+                            this.currentTouchState = TOUCH_STATE_SCALE
                         }
                     }
                 }
-                5 -> if (event.pointerCount == 2) {
+                MotionEvent.ACTION_POINTER_DOWN -> if (event.pointerCount == 2) {
                     this.saveMatrix.set(this.currentMatrix)
                     this.saveZoom = this.currentZoom
                     this.saveRotateDegrees = this.currentRotateDegrees
                     this.startTouch.set(event.getX(0), event.getY(0))
-                    this.currentTouchState = 4
+                    this.currentTouchState = TOUCH_STATE_TWO_POINTED
                     this.mid = this.midPoint(event)
                     this.oldDist = this.distance(event, this.mid)
                     this.oldDegree = this.rotation(event, this.mid)
                 }
-                6 -> this.currentTouchState = 0
-                else -> { }
+                MotionEvent.ACTION_POINTER_UP -> this.currentTouchState = TOUCH_STATE_NO
+                else -> {}
             }
-
             return true
         }
     }
 
-    private fun canDragX(event: MotionEvent) : Boolean {
+    private fun canDragX(event: MotionEvent): Boolean {
         val currentX: Float
-        val checkingMatrix: Matrix = Matrix()
+        val checkingMatrix = Matrix()
         val newMapWidth = when {
             Math.round(mapWidth / maxX) >= 2 -> mapWidth / Math.round(mapWidth / maxX)
             else -> mapWidth
@@ -143,24 +147,23 @@ open class ImprovedMapView : MapView {
             else -> -1
         }
 
-        if (currentZoom > minZoomModifier && minZoomModifier > 0f) {
+        if (minZoomModifier > 0f) {
             val mapWidthWithScale = mapWidth * currentZoom
-
             return when (direction) {
                 RIGHT -> currentX < 0
-                else  -> currentX > (mapWidthWithScale - maxX) * -1
+                else -> currentX > (mapWidthWithScale - maxX) * -1
             }
         } else {
             return when (direction) {
                 RIGHT -> currentX < 0
-                else  -> currentX > (newMapWidth - maxX) * -1
+                else -> currentX > (newMapWidth - maxX) * -1
             }
         }
     }
 
-    private fun canDragY(event: MotionEvent) : Boolean {
+    private fun canDragY(event: MotionEvent): Boolean {
         val currentY: Float
-        val checkingMatrix: Matrix = Matrix()
+        val checkingMatrix = Matrix()
         val newMapHeigth = when {
             Math.round(mapHeight / maxY) >= 2 -> mapHeight / Math.round(mapHeight / maxY)
             else -> mapHeight
@@ -178,15 +181,14 @@ open class ImprovedMapView : MapView {
 
         if (currentZoom > minZoomModifier && minZoomModifier > 0f) {
             val mapHeightWithScale = mapHeight * currentZoom
-
             return when (direction) {
                 TOP -> currentY > if (mapHeightWithScale < maxY) 0f else (mapHeightWithScale - maxY) * -1
-                else  -> if (mapHeightWithScale > maxY) currentY < 0 else currentY < maxY - mapHeightWithScale
+                else -> if (mapHeightWithScale > maxY) currentY < 0 else currentY < maxY - mapHeightWithScale
             }
         } else {
             return when (direction) {
                 TOP -> currentY > 0
-                else  -> currentY < (newMapHeigth - maxY) * -1
+                else -> currentY < (newMapHeigth - maxY) * -1
             }
         }
     }
